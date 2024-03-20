@@ -15,6 +15,14 @@ final class MovieQuizViewController: UIViewController {
         let correctAnswer: Bool
     }
     
+    struct QuizStepViewModel {
+      let image: UIImage
+      let question: String
+      let questionNumber: String
+    }
+    
+    private var currentQuestionIndex = 0
+    private var correctAnswers = 0
     private let questions: [QuizQuestion] = [
             QuizQuestion(
                 image: "The Godfather",
@@ -65,12 +73,44 @@ final class MovieQuizViewController: UIViewController {
         questionLabel.font = UIFont(name: "YSDisplay-Bold", size: 23)
         questionTitleLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
         indexLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
+        
+       let convertToModel = convert(model: questions[0])
+        let showFirstQuiz = show(quiz: convertToModel)
+    }
+    
+    private func convert(model: QuizQuestion) -> QuizStepViewModel {
+        let questionStep = QuizStepViewModel(
+            image: UIImage(named: model.image) ?? UIImage(),
+            question: model.text,
+            questionNumber: "\(currentQuestionIndex + 1)/\(questions.count)")
+        return questionStep
+    }
+    
+    private func show(quiz step: QuizStepViewModel) {
+        imageView.image = step.image
+        indexLabel.text = step.questionNumber
+        questionLabel.text = step.question
+    }
+    
+    private func showAnswerResult(isCorrect: Bool) {
+            imageView.layer.masksToBounds = true
+                imageView.layer.borderWidth = 8
+                imageView.layer.borderColor = isCorrect ? UIColor.ypGreenIOS.cgColor : UIColor.ypRedIOS.cgColor
+            imageView.layer.cornerRadius = 20
     }
     
     @IBAction private func noButtonClicked(_ sender: Any) {
+        let currentQuestion = questions[currentQuestionIndex]
+        let givenAnswer = false
+        
+        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
     @IBAction private func yesButtonClicked(_ sender: Any) {
+        let currentQuestion = questions[currentQuestionIndex]
+        let givenAnswer = true
+        
+        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     /*
      Mock-данные
