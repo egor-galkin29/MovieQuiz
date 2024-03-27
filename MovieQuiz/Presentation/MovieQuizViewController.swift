@@ -96,6 +96,7 @@ final class MovieQuizViewController: UIViewController {
         imageView.image = step.image
         indexLabel.text = step.questionNumber
         questionLabel.text = step.question
+        imageView.layer.cornerRadius = 20
     }
     
     private func showAnswerResult(isCorrect: Bool) {
@@ -121,6 +122,8 @@ final class MovieQuizViewController: UIViewController {
                 text: text,
                 buttonText: "Сыграть ещё раз")
             show(quiz: viewModel)
+            imageView.layer.borderWidth = 0
+
         } else {
             currentQuestionIndex += 1
             let nextQuestion = questions[currentQuestionIndex]
