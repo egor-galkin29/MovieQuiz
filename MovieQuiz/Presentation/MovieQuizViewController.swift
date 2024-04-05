@@ -26,11 +26,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         
         questionFactory = QuestionFactory(delegate: self)
         
-        if let firstQuestion = questionFactory.requestNextQuestion() {
-            currentQuestion = firstQuestion
-            let viewModel = convert(model: firstQuestion)
-            show(quiz: viewModel)
-        }
+        questionFactory?.requestNextQuestion()
     }
     
     // MARK: - QuestionFactoryDelegate
@@ -93,12 +89,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         } else {
             currentQuestionIndex += 1
             imageView.layer.borderWidth = 0
-            if let nextQuestion = questionFactory.requestNextQuestion() {
-                currentQuestion = nextQuestion
-                let viewModel = convert(model: nextQuestion)
-
-                show(quiz: viewModel)
-            }
+            questionFactory?.requestNextQuestion()
         }
     }
 
@@ -114,11 +105,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             self.currentQuestionIndex = 0
             self.correctAnswers = 0
 
-            if let firstQuestion = questionFactory.requestNextQuestion() {
-                currentQuestion = firstQuestion
-                let viewModel = convert(model: firstQuestion)
-                show(quiz: viewModel)
-            }
+            questionFactory?.requestNextQuestion()
         }
         
         alert.addAction(action)
