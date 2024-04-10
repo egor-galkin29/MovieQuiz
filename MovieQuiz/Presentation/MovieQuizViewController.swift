@@ -1,6 +1,6 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
+final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, AlertPresentDelegate {
     
     @IBOutlet private weak var imageView: UIImageView!
     @IBOutlet private weak var indexLabel: UILabel!
@@ -14,7 +14,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private let questionsAmount: Int = 10
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
-    
+    private var alertPresent: AlertProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,6 +42,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
         }
+    }
+    
+    // MARK: - AlertPresentDelegate
+    func presentAlert() {
+            present(alert, animated: true, completion: nil)
     }
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
@@ -79,11 +84,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             let text = correctAnswers == questionsAmount ?
                     "Поздравляем, вы ответили на 10 из 10!" :
                     "Вы ответили на \(correctAnswers) из 10, попробуйте ещё раз!"
-            let viewModel = QuizResultsViewModel(
+            let viewModel = AlertModel(
                 title: "Этот раунд окончен!",
-                text: text,
+                message: text,
                 buttonText: "Сыграть ещё раз")
-            show(quiz: viewModel)
+            alertPresent?.showAlert(model: viewModel)
             imageView.layer.borderWidth = 0
 
         } else {
@@ -93,25 +98,25 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
     }
 
-    //private func show(quiz result: QuizResultsViewModel) {
-       // let alert = UIAlertController(
-        //    title: result.title,
-            //message: result.text,
-            //preferredStyle: .alert)
-        //
-        //let action = UIAlertAction(title: result.buttonText, style: .default) { [weak self] _ in // слабая ссылка на self
-         //   guard let self = self else { return } // разворачиваем слабую ссылку
+//    private func show(quiz result: QuizResultsViewModel) {
+//        let alert = UIAlertController(
+//            title: result.title,
+//            message: result.text,
+//            preferredStyle: .alert)
+//        
+//        let action = UIAlertAction(title: result.buttonText, style: .default) { [weak self] _ in // слабая ссылка на self
+//         guard let self = self else { return } // разворачиваем слабую ссылку
 //
-     //       self.currentQuestionIndex = 0
-      //      self.correctAnswers = 0
+//           self.currentQuestionIndex = 0
+//            self.correctAnswers = 0
 //
-       //     questionFactory?.requestNextQuestion()
-       // }
-        
-       // alert.addAction(action)
-        
-     //   self.present(alert, animated: true, completion: nil)
-    //}
+//           questionFactory?.requestNextQuestion()
+//        }
+//        
+//        alert.addAction(action)
+//        
+//        self.present(alert, animated: true, completion: nil)
+//    }
     
     
     @IBAction private func noButtonClicked(_ sender: Any) {
