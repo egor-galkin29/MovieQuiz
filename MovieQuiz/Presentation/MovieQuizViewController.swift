@@ -46,7 +46,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     
     // MARK: - AlertPresentDelegate
     func presentAlert() {
-            present(alert, animated: true, completion: nil)
+        correctAnswers = 0
+        currentQuestionIndex = 0
+        questionFactory?.requestNextQuestion()
+
     }
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
