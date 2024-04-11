@@ -1,6 +1,6 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, AlertPresentDelegate {
+final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     @IBOutlet private weak var imageView: UIImageView!
     @IBOutlet private weak var indexLabel: UILabel!
@@ -41,14 +41,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
-        }
-    }
-    
-    // MARK: - AlertPresentDelegate
-    
-    func showAlert(alert: UIAlertController) {
-        DispatchQueue.main.async { [weak self] in
-            self?.present(alert,animated: true, completion: nil)
         }
     }
     
@@ -105,27 +97,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
             questionFactory?.requestNextQuestion()
         }
     }
-
-//    private func show(quiz result: QuizResultsViewModel) {
-//        let alert = UIAlertController(
-//            title: result.title,
-//            message: result.text,
-//            preferredStyle: .alert)
-//        
-//        let action = UIAlertAction(title: result.buttonText, style: .default) { [weak self] _ in // слабая ссылка на self
-//         guard let self = self else { return } // разворачиваем слабую ссылку
-//
-//           self.currentQuestionIndex = 0
-//            self.correctAnswers = 0
-//
-//           questionFactory?.requestNextQuestion()
-//        }
-//        
-//        alert.addAction(action)
-//        
-//        self.present(alert, animated: true, completion: nil)
-//    }
-    
     
     @IBAction private func noButtonClicked(_ sender: Any) {
         guard let currentQuestion = currentQuestion else {
