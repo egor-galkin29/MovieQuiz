@@ -1,5 +1,5 @@
-import Foundation
+import UIKit
 
 protocol AlertPresentDelegate: AnyObject {
-    func presentAlert()
+    func showAlert(alert: UIAlertController)
 }

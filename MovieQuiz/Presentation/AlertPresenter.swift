@@ -1,23 +1,21 @@
 import UIKit
 
-class AlertPresenter: AlertProtocol {
-    weak var delegate: AlertPresentDelegate?
-    private let movieQuizViewController: UIViewController
+final class AlertPresenter: AlertProtocol {
     
-    init(delegate: AlertPresentDelegate? = nil, movieQuizViewController: UIViewController) {
-        self.movieQuizViewController = movieQuizViewController
+    weak var delegate: AlertPresentDelegate?
+    
+    init(delegate: AlertPresentDelegate? = nil) {
         self.delegate = delegate
     }
     
-    func showAlert(model: AlertModel) {
+    func createAlert(model: AlertModel) {
         let alert = UIAlertController(
             title: model.title,
             message: model.message,
-            preferredStyle: .alert
-        )
+            preferredStyle: .alert)
         
-        let action = UIAlertAction(title: model.buttonText, style: .default) { [weak self] _ in
-            guard let self = self else { return }
+        let action = UIAlertAction(title: model.buttonText, style: .default) { _ in
+            model.completion()
         }
         
         guard let delegate = delegate else {
@@ -25,7 +23,6 @@ class AlertPresenter: AlertProtocol {
         }
         alert.addAction(action)
         
-        movieQuizViewController.present(alert, animated: true, completion: nil)
-        delegate.presentAlert()
+        delegate.showAlert(alert: alert)
     }
 }

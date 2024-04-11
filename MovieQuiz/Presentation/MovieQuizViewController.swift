@@ -45,11 +45,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
     
     // MARK: - AlertPresentDelegate
-    func presentAlert() {
-        correctAnswers = 0
-        currentQuestionIndex = 0
-        questionFactory?.requestNextQuestion()
-
+    
+    func showAlert(alert: UIAlertController) {
+        DispatchQueue.main.async { [weak self] in
+            self?.present(alert,animated: true, completion: nil)
+        }
     }
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
@@ -84,16 +84,21 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questionsAmount - 1 {
-            let text = correctAnswers == questionsAmount ?
+            let message = correctAnswers == questionsAmount ?
                     "Поздравляем, вы ответили на 10 из 10!" :
                     "Вы ответили на \(correctAnswers) из 10, попробуйте ещё раз!"
             let viewModel = AlertModel(
                 title: "Этот раунд окончен!",
-                message: text,
-                buttonText: "Сыграть ещё раз")
-            alertPresent?.showAlert(model: viewModel)
-            imageView.layer.borderWidth = 0
-
+                message: message,
+                buttonText: "Сыграть ещё раз",
+                completion:
+                    { [weak self] in
+                        self?.imageView.layer.borderColor = UIColor.clear.cgColor
+                        self?.currentQuestionIndex = 0
+                        self?.correctAnswers = 0
+                        self?.questionFactory?.requestNextQuestion()
+            })
+            alertPresent?.createAlert(model: viewModel)
         } else {
             currentQuestionIndex += 1
             imageView.layer.borderWidth = 0
