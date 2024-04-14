@@ -79,10 +79,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         if currentQuestionIndex == questionsAmount - 1 {
             
             statisticService?.store(correct: correctAnswers, total: questionsAmount)
-            guard let gamesCount = statisticService?.gamesCount else {
-              return
-            }
-            guard let bestGame = statisticService?.bestGame else {
+            guard let gamesCount = statisticService?.gamesCount,
+                  let bestGame = statisticService?.bestGame else {
                 return
             }
             let totalAccuracy = "\(String(format: "%.2f", statisticService!.totalAccuracy))%"
@@ -95,14 +93,14 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             let viewModel = AlertModel(
                 title: "Этот раунд окончен!",
                 message: message,
-                buttonText: "Сыграть ещё раз",
-                completion:
-                    { [weak self] in
-                        self?.imageView.layer.borderColor = UIColor.clear.cgColor
-                        self?.currentQuestionIndex = 0
-                        self?.correctAnswers = 0
-                        self?.questionFactory?.requestNextQuestion()
-            })
+                buttonText: "Сыграть ещё раз"
+            ) { [weak self] in
+                self?.imageView.layer.borderColor = UIColor.clear.cgColor
+                self?.currentQuestionIndex = 0
+                self?.correctAnswers = 0
+                self?.questionFactory?.requestNextQuestion()
+            }
+
             alertPresent?.createAlert(model: viewModel)
         } else {
             currentQuestionIndex += 1

@@ -10,16 +10,6 @@ protocol StatisticService {
     func store(correct count: Int, total amount: Int)
 }
 
-struct GameRecord: Codable {
-    let correct: Int
-    let total: Int
-    let date: Date
-    
-    func isBetterThan(_ another: GameRecord) -> Bool {
-            correct > another.correct
-        }
-    }
-
 final class StatisticServiceImplementation: StatisticService {
     private let userDefaults = UserDefaults.standard
     
