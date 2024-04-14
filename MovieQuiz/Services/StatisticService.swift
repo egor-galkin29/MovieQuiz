@@ -94,14 +94,17 @@ final class StatisticServiceImplementation: StatisticService {
     
     var bestGame: GameRecord {
         get {
-            guard let data = userDefaults.data(forKey: Keys.bestGame.rawValue),
-            let record = try? JSONDecoder().decode(GameRecord.self, from: data) else {
-                return .init(correct: 0, total: 0, date: Date())
-            }
-
-            return record
-        }
-
+            guard let data = userDefaults.data(forKey: Keys.bestGame.rawValue) else {
+                            return GameRecord.init(correct: 0, total: 0, date: Date())
+                        }
+                        do {
+                            let record = try JSONDecoder().decode(GameRecord.self, from: data)
+                            return record
+                        } catch {
+                            print("\(String(String(describing: error)))")
+                            return GameRecord.init(correct: 0, total: 0, date: Date())
+                        }
+             }
         set {
             guard let data = try? JSONEncoder().encode(newValue) else {
                 print("Невозможно сохранить результат")
@@ -117,17 +120,15 @@ final class StatisticServiceImplementation: StatisticService {
     }
     
     func store(correct count: Int, total amount: Int) {
-        let currentGame: GameRecord = GameRecord(correct: count, total: amount, date: Date())
-        if bestGame.isBetterThan(currentGame) {
-            bestGame = currentGame
+            totalCorrectAnswers += count
+            totalAmount += amount
+            totalAccuracy = Double(totalCorrectAnswers)/Double(totalAmount)
+            gamesCount += 1
+            if count > bestGame.correct {
+                let newBestGame = GameRecord(correct: count, total: amount, date: Date())
+                bestGame = newBestGame
+            }
         }
-        
-        totalCorrectAnswers += count
-        totalAmount += amount
-        gamesCount += 1
-                
-        totalAccuracy = Double(totalCorrectAnswers) / Double(totalAmount) * 100
-    }
     
 }
 

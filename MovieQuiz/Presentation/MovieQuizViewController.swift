@@ -16,6 +16,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var currentQuestion: QuizQuestion?
     private var alertPresent: AlertProtocol?
     private var statisticService: StatisticService?
+    var isAnsweringQuestion = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +27,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         indexLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
         statisticService = StatisticServiceImplementation()
         alertPresent = AlertPresenter(delegate: self)
+        yesButton.isEnabled = true
+        noButton.isEnabled = true
         
         questionFactory = QuestionFactory(delegate: self)
         
@@ -115,6 +118,16 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
         let givenAnswer = false
         
+        if !isAnsweringQuestion {
+            isAnsweringQuestion = true
+            yesButton.isEnabled = false
+            noButton.isEnabled = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.isAnsweringQuestion = false
+                self.yesButton.isEnabled = true
+                self.noButton.isEnabled = true
+            }
+        }
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
@@ -124,6 +137,16 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
         let givenAnswer = true
         
+        if !isAnsweringQuestion {
+            isAnsweringQuestion = true
+            yesButton.isEnabled = false
+            noButton.isEnabled = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.isAnsweringQuestion = false
+                self.yesButton.isEnabled = true
+                self.noButton.isEnabled = true
+            }
+        }
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
 }
