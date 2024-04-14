@@ -15,6 +15,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
     private var alertPresent: AlertProtocol?
+    private var statisticService: StatisticService?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,7 +24,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         questionLabel.font = UIFont(name: "YSDisplay-Bold", size: 23)
         questionTitleLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
         indexLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
-        
+        statisticService = StatisticServiceImplementation()
         alertPresent = AlertPresenter(delegate: self)
         
         questionFactory = QuestionFactory(delegate: self)
@@ -78,9 +79,21 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questionsAmount - 1 {
-            let message = correctAnswers == questionsAmount ?
-                    "Поздравляем, вы ответили на 10 из 10!" :
-                    "Вы ответили на \(correctAnswers) из 10, попробуйте ещё раз!"
+            
+            statisticService?.store(correct: correctAnswers, total: questionsAmount)
+            guard let gamesCount = statisticService?.gamesCount else {
+              return
+            }
+            guard let bestGame = statisticService?.bestGame else {
+                return
+            }
+            let totalAccuracy = "\(String(format: "%.2f", statisticService!.totalAccuracy))%"
+            let message = """
+            Ваш результат: \(correctAnswers)/10
+            Количество сыгранных квизов: \(gamesCount)
+            Рекорд: \(bestGame.correct)/10 (\(bestGame.date.dateTimeString))
+            Средняя точность: \(totalAccuracy)
+            """
             let viewModel = AlertModel(
                 title: "Этот раунд окончен!",
                 message: message,
