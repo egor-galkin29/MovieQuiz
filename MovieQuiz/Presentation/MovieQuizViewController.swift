@@ -14,7 +14,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private let questionsAmount: Int = 10
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
-    
+    private var alertPresent: AlertProtocol?
+    private var statisticService: StatisticService?
+    var isAnsweringQuestion = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,13 +25,15 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         questionLabel.font = UIFont(name: "YSDisplay-Bold", size: 23)
         questionTitleLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
         indexLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
+        statisticService = StatisticServiceImplementation()
+        alertPresent = AlertPresenter(delegate: self)
+        yesButton.isEnabled = true
+        noButton.isEnabled = true
         
         questionFactory = QuestionFactory(delegate: self)
         
         questionFactory?.requestNextQuestion()
     }
-    
-    // MARK: - QuestionFactoryDelegate
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {
@@ -68,51 +72,45 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreenIOS.cgColor : UIColor.ypRedIOS.cgColor
         imageView.layer.cornerRadius = 20
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in // слабая ссылка на self
-            guard let self = self else { return } // разворачиваем слабую ссылку
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            guard let self = self else { return }
             self.showNextQuestionOrResults()
         } 
     }
     
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questionsAmount - 1 {
-            let text = correctAnswers == questionsAmount ?
-                    "Поздравляем, вы ответили на 10 из 10!" :
-                    "Вы ответили на \(correctAnswers) из 10, попробуйте ещё раз!"
-            let viewModel = QuizResultsViewModel(
+            
+            statisticService?.store(correct: correctAnswers, total: questionsAmount)
+            guard let gamesCount = statisticService?.gamesCount,
+                  let bestGame = statisticService?.bestGame else {
+                return
+            }
+            let totalAccuracy = "\(String(format: "%.2f", statisticService!.totalAccuracy))%"
+            let message = """
+            Ваш результат: \(correctAnswers)/10
+            Количество сыгранных квизов: \(gamesCount)
+            Рекорд: \(bestGame.correct)/10 (\(bestGame.date.dateTimeString))
+            Средняя точность: \(totalAccuracy)
+            """
+            let viewModel = AlertModel(
                 title: "Этот раунд окончен!",
-                text: text,
-                buttonText: "Сыграть ещё раз")
-            show(quiz: viewModel)
-            imageView.layer.borderWidth = 0
+                message: message,
+                buttonText: "Сыграть ещё раз"
+            ) { [weak self] in
+                self?.imageView.layer.borderColor = UIColor.clear.cgColor
+                self?.currentQuestionIndex = 0
+                self?.correctAnswers = 0
+                self?.questionFactory?.requestNextQuestion()
+            }
 
+            alertPresent?.createAlert(model: viewModel)
         } else {
             currentQuestionIndex += 1
             imageView.layer.borderWidth = 0
             questionFactory?.requestNextQuestion()
         }
     }
-
-    private func show(quiz result: QuizResultsViewModel) {
-        let alert = UIAlertController(
-            title: result.title,
-            message: result.text,
-            preferredStyle: .alert)
-        
-        let action = UIAlertAction(title: result.buttonText, style: .default) { [weak self] _ in // слабая ссылка на self
-            guard let self = self else { return } // разворачиваем слабую ссылку
-
-            self.currentQuestionIndex = 0
-            self.correctAnswers = 0
-
-            questionFactory?.requestNextQuestion()
-        }
-        
-        alert.addAction(action)
-        
-        self.present(alert, animated: true, completion: nil)
-    }
-    
     
     @IBAction private func noButtonClicked(_ sender: Any) {
         guard let currentQuestion = currentQuestion else {
@@ -120,6 +118,16 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
         let givenAnswer = false
         
+        if !isAnsweringQuestion {
+            isAnsweringQuestion = true
+            yesButton.isEnabled = false
+            noButton.isEnabled = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.isAnsweringQuestion = false
+                self.yesButton.isEnabled = true
+                self.noButton.isEnabled = true
+            }
+        }
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
@@ -129,6 +137,16 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
         let givenAnswer = true
         
+        if !isAnsweringQuestion {
+            isAnsweringQuestion = true
+            yesButton.isEnabled = false
+            noButton.isEnabled = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.isAnsweringQuestion = false
+                self.yesButton.isEnabled = true
+                self.noButton.isEnabled = true
+            }
+        }
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
 }

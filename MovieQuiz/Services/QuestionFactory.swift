@@ -5,27 +5,27 @@ class QuestionFactory: QuestionFactoryProtocol {
         QuizQuestion(
             image: "The Godfather",
             text: "Рейтинг этого фильма больше чем 6?",
-            correctAnswer: true),
+            correctAnswer: false),
         QuizQuestion(
             image: "The Dark Knight",
             text: "Рейтинг этого фильма больше чем 6?",
-            correctAnswer: true),
+            correctAnswer: false),
         QuizQuestion(
             image: "Kill Bill",
             text: "Рейтинг этого фильма больше чем 6?",
-            correctAnswer: true),
+            correctAnswer: false),
         QuizQuestion(
             image: "The Avengers",
             text: "Рейтинг этого фильма больше чем 6?",
-            correctAnswer: true),
+            correctAnswer: false),
         QuizQuestion(
             image: "Deadpool",
             text: "Рейтинг этого фильма больше чем 6?",
-            correctAnswer: true),
+            correctAnswer: false),
         QuizQuestion(
             image: "The Green Knight",
             text: "Рейтинг этого фильма больше чем 6?",
-            correctAnswer: true),
+            correctAnswer: false),
         QuizQuestion(
             image: "Old",
             text: "Рейтинг этого фильма больше чем 6?",
