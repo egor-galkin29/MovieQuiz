@@ -65,7 +65,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
 
         alertPresent?.createAlert(model: viewModel)
     }
-    //QuestionFactoryDelegate
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {
@@ -81,7 +80,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     func didLoadDataFromServer() {
-        activityIndicator.isHidden = true // скрываем индикатор загрузки
+        activityIndicator.isHidden = true
         questionFactory?.requestNextQuestion()
     }
     
