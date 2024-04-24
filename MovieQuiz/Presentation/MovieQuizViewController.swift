@@ -25,7 +25,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         questionLabel.font = UIFont(name: "YSDisplay-Bold", size: 23)
         questionTitleLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
         indexLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
-
+        presenter.viewController = self
         alertPresent = AlertPresenter(delegate: self)
         yesButton.isEnabled = true
         noButton.isEnabled = true
@@ -96,7 +96,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         imageView.layer.cornerRadius = 20
     }
     
-    private func showAnswerResult(isCorrect: Bool) {
+    func showAnswerResult(isCorrect: Bool) {
         if isCorrect {
             correctAnswers += 1
         }
@@ -148,10 +148,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     @IBAction private func noButtonClicked(_ sender: Any) {
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
-        let givenAnswer = false
+        presenter.currentQuestion = currentQuestion
+                presenter.noButtonClicked()
         
         if !isAnsweringQuestion {
             isAnsweringQuestion = true
@@ -163,14 +161,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
                 self.noButton.isEnabled = true
             }
         }
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
     @IBAction private func yesButtonClicked(_ sender: Any) {
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
-        let givenAnswer = true
+        presenter.currentQuestion = currentQuestion
+        presenter.yesButtonClicked()
         
         if !isAnsweringQuestion {
             isAnsweringQuestion = true
@@ -182,6 +177,5 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
                 self.noButton.isEnabled = true
             }
         }
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
 }
