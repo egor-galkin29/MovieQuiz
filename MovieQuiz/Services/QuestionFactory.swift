@@ -39,6 +39,9 @@ class QuestionFactory: QuestionFactoryProtocol {
             do {
                 imageData = try Data(contentsOf: movie.resizedImageURL)
             } catch {
+                DispatchQueue.main.async {
+                    self.delegate?.didFailToLoadData(with: error)
+                }
                 print("Failed to load image")
             }
             
