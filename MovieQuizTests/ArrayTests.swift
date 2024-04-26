@@ -3,7 +3,7 @@ import XCTest
 
 class ArrayTests: XCTestCase {
     
-    func getValueOfRange() throws {
+    func testGetValueOfRange() throws {
         let array = [1,1,2,3,5]
         
         
@@ -13,7 +13,7 @@ class ArrayTests: XCTestCase {
         XCTAssertEqual(value,2)
     }
     
-    func getValueOutOfRange() throws {
+    func testGetValueOutOfRange() throws {
         let array = [1,1,2,3,5]
         
         let value = array[safe: 20]
