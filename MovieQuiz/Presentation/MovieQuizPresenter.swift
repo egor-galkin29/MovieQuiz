@@ -21,8 +21,6 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         viewController.showLoadingIndicator()
     }
 
-    // MARK: - QuestionFactoryDelegate
-
     func didLoadDataFromServer() {
         viewController?.hideLoadingIndicator()
         questionFactory?.requestNextQuestion()
@@ -101,7 +99,6 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else { return }
-            //viewController?.imageView.layer.borderWidth = 0
             self.proceedToNextQuestionOrResults()
         }
     }
